@@ -37,11 +37,23 @@ export default function Home() {
     }
   });
 
-  // Reset points mutation
-  const resetPointsMutation = useMutation({
-    mutationFn: async () => {
-      await apiRequest('POST', '/api/points/reset', {});
-      return {};
+  // Reset points for a specific child
+  const resetChildPointsMutation = useMutation({
+    mutationFn: async (child: 'adrian' | 'emma') => {
+      if (!data) return {};
+      
+      // Create a copy of the current points
+      const pointsData = {
+        adrian: [...(data.adrian || [])],
+        emma: [...(data.emma || [])]
+      };
+      
+      // Reset only the specified child's points
+      pointsData[child] = [];
+      
+      // Update server
+      await apiRequest('POST', '/api/points', pointsData);
+      return pointsData;
     },
     onSuccess: () => {
       // Invalidate query to refresh UI
@@ -84,14 +96,20 @@ export default function Home() {
     logout();
   };
 
-  // Handle reset button click
-  const handleResetClick = () => {
+  // State to track which child is being reset
+  const [childToReset, setChildToReset] = useState<'adrian' | 'emma' | null>(null);
+
+  // Handle reset button click for a specific child
+  const handleResetClick = (child: 'adrian' | 'emma') => {
+    setChildToReset(child);
     setIsResetModalOpen(true);
   };
 
   // Handle reset confirmation
   const handleResetConfirm = () => {
-    resetPointsMutation.mutate();
+    if (childToReset) {
+      resetChildPointsMutation.mutate(childToReset);
+    }
   };
 
   return (
@@ -124,39 +142,61 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Reset Button - Only visible to parents (admin role) */}
-        {user && user.role === 'admin' && (
-          <ResetButton onClick={handleResetClick} />
-        )}
-
         {/* Main content */}
         <div className="flex flex-col md:flex-row gap-6">
-          <ChildSection 
-            name="Adrian" 
-            color="blue" 
-            colorClass="bg-blue-600" 
-            textColorClass="text-blue-600" 
-            points={data?.adrian || []} 
-            onTogglePoint={(pointIndex) => handleTogglePoint('adrian', pointIndex)} 
-            isLoading={isLoading}
-          />
+          <div className="flex-1">
+            {/* Reset Button for Adrian - Only visible to parents (admin role) */}
+            {user && user.role === 'admin' && (
+              <div className="flex justify-center">
+                <ResetButton 
+                  onClick={() => handleResetClick('adrian')} 
+                  childName="Adrian" 
+                  color="blue"
+                />
+              </div>
+            )}
           
-          <ChildSection 
-            name="Emma" 
-            color="pink" 
-            colorClass="bg-pink-500" 
-            textColorClass="text-pink-500" 
-            points={data?.emma || []} 
-            onTogglePoint={(pointIndex) => handleTogglePoint('emma', pointIndex)} 
-            isLoading={isLoading}
-          />
+            <ChildSection 
+              name="Adrian" 
+              color="blue" 
+              colorClass="bg-blue-600" 
+              textColorClass="text-blue-600" 
+              points={data?.adrian || []} 
+              onTogglePoint={(pointIndex) => handleTogglePoint('adrian', pointIndex)} 
+              isLoading={isLoading}
+            />
+          </div>
+          
+          <div className="flex-1">
+            {/* Reset Button for Emma - Only visible to parents (admin role) */}
+            {user && user.role === 'admin' && (
+              <div className="flex justify-center">
+                <ResetButton 
+                  onClick={() => handleResetClick('emma')} 
+                  childName="Emma" 
+                  color="pink"
+                />
+              </div>
+            )}
+            
+            <ChildSection 
+              name="Emma" 
+              color="pink" 
+              colorClass="bg-pink-500" 
+              textColorClass="text-pink-500" 
+              points={data?.emma || []} 
+              onTogglePoint={(pointIndex) => handleTogglePoint('emma', pointIndex)} 
+              isLoading={isLoading}
+            />
+          </div>
         </div>
 
         {/* Reset Confirmation Modal */}
         <ResetModal 
           isOpen={isResetModalOpen} 
           onClose={() => setIsResetModalOpen(false)} 
-          onConfirm={handleResetConfirm} 
+          onConfirm={handleResetConfirm}
+          childName={childToReset === 'adrian' ? 'Adrian' : childToReset === 'emma' ? 'Emma' : undefined}
         />
 
         {/* Footer */}
