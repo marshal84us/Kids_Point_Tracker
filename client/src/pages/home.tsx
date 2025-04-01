@@ -1,15 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ChildSection } from "@/components/child-section";
 import { ResetButton } from "@/components/reset-button";
 import { ResetModal } from "@/components/reset-modal";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/auth-context";
+import { useLocation } from "wouter";
 
 export default function Home() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const { user, logout, isLoading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && (!user || !user.authenticated)) {
+      setLocation("/login");
+    }
+  }, [user, authLoading, setLocation]);
 
   // Fetch points data from the server
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<{ adrian: number[], emma: number[] }>({
     queryKey: ['/api/points'],
     staleTime: 0 // Always get the latest points
   });
@@ -42,12 +54,13 @@ export default function Home() {
 
   // Toggle point handler
   const handleTogglePoint = (child: 'adrian' | 'emma', pointIndex: number) => {
-    if (!data) return;
+    // Only parents (admin role) can modify points
+    if (!data || user?.role !== 'admin') return;
     
     // Create a copy of the current points
     const pointsData = {
-      adrian: [...data.adrian || []],
-      emma: [...data.emma || []]
+      adrian: [...(data.adrian || [])],
+      emma: [...(data.emma || [])]
     };
     
     // Toggle the point
@@ -65,6 +78,11 @@ export default function Home() {
     // Update server
     updatePointsMutation.mutate(pointsData);
   };
+  
+  // Handle logout
+  const handleLogout = () => {
+    logout();
+  };
 
   // Handle reset button click
   const handleResetClick = () => {
@@ -79,14 +97,37 @@ export default function Home() {
   return (
     <div className="bg-slate-50 min-h-screen font-sans">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
-        {/* Header */}
-        <header className="text-center mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Kids Points Tracker</h1>
-          <p className="text-gray-600 mt-2">Tap the circles to award points!</p>
+        {/* Header and User Info */}
+        <header className="mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Kids Points Tracker</h1>
+              {user && user.role === 'admin' ? (
+                <p className="text-gray-600 mt-2">Welcome, Parent! You can add or remove points.</p>
+              ) : (
+                <p className="text-gray-600 mt-2">Welcome! You're in view-only mode.</p>
+              )}
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="text-sm text-gray-600">
+                Logged in as: <span className="font-semibold">{user?.username}</span>
+              </div>
+              <Button onClick={handleLogout} variant="outline" size="sm">
+                Log out
+              </Button>
+            </div>
+          </div>
+          <p className="text-center text-gray-600 mb-4">
+            {user && user.role === 'admin' 
+              ? "Tap the circles to award points!" 
+              : "You can see the points but can't change them."}
+          </p>
         </header>
 
-        {/* Reset Button */}
-        <ResetButton onClick={handleResetClick} />
+        {/* Reset Button - Only visible to parents (admin role) */}
+        {user && user.role === 'admin' && (
+          <ResetButton onClick={handleResetClick} />
+        )}
 
         {/* Main content */}
         <div className="flex flex-col md:flex-row gap-6">

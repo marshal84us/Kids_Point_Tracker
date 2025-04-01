@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, array } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -16,6 +16,30 @@ export const insertUserSchema = createInsertSchema(users).pick({
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Authentication schemas
+export const loginSchema = z.object({
+  username: z.string(),
+  password: z.string()
+});
+
+export const userRoleSchema = z.enum(['admin', 'viewer']);
+
+export type UserRole = z.infer<typeof userRoleSchema>;
+
+export const appUserSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+  role: userRoleSchema
+});
+
+export type AppUser = z.infer<typeof appUserSchema>;
+
+export const credentialsSchema = z.object({
+  users: z.array(appUserSchema)
+});
+
+export type Credentials = z.infer<typeof credentialsSchema>;
 
 // Points schema for tracking kids' points
 export const pointsSchema = z.object({

@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type Points } from "@shared/schema";
+import { users, type User, type InsertUser, type Points, type AppUser, type Credentials, type UserRole } from "@shared/schema";
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -14,10 +14,15 @@ export interface IStorage {
   getPoints(): Promise<Points>;
   updatePoints(points: Points): Promise<Points>;
   resetPoints(): Promise<Points>;
+  
+  // Authentication methods
+  authenticateUser(username: string, password: string): Promise<{ authenticated: boolean, role: UserRole | null }>;
+  getCredentials(): Promise<Credentials>;
 }
 
-// Path to the JSON file that stores points data
+// Path to the JSON files
 const pointsFilePath = path.resolve('data/points.json');
+const credentialsFilePath = path.resolve('data/credentials.json');
 
 export class JsonFileStorage implements IStorage {
   private users: Map<number, User>;
@@ -43,6 +48,34 @@ export class JsonFileStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  // Authentication methods
+  async getCredentials(): Promise<Credentials> {
+    try {
+      // Read credentials from JSON file
+      const data = await fs.readFile(credentialsFilePath, 'utf8');
+      return JSON.parse(data) as Credentials;
+    } catch (error) {
+      console.error('Error reading credentials file:', error);
+      throw new Error('Failed to read credentials');
+    }
+  }
+
+  async authenticateUser(username: string, password: string): Promise<{ authenticated: boolean, role: UserRole | null }> {
+    try {
+      const credentials = await this.getCredentials();
+      const user = credentials.users.find(u => u.username === username && u.password === password);
+      
+      if (user) {
+        return { authenticated: true, role: user.role };
+      }
+      
+      return { authenticated: false, role: null };
+    } catch (error) {
+      console.error('Authentication error:', error);
+      return { authenticated: false, role: null };
+    }
   }
 
   // Points related methods
