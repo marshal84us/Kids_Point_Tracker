@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ChildSection } from "@/components/child-section";
@@ -8,26 +8,11 @@ import { ResetModal } from "@/components/reset-modal";
 export default function Home() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
-  // Fetch initial points data
+  // Fetch points data from the server
   const { data, isLoading } = useQuery({
     queryKey: ['/api/points'],
     staleTime: 0 // Always get the latest points
   });
-
-  // Initialize points from localStorage if no server data yet
-  useEffect(() => {
-    if (!data && !isLoading) {
-      // Try to load from localStorage as fallback
-      const adrianPoints = JSON.parse(localStorage.getItem('adrian_points') || '[]');
-      const emmaPoints = JSON.parse(localStorage.getItem('emma_points') || '[]');
-      
-      // Save to server
-      updatePointsMutation.mutate({
-        adrian: adrianPoints,
-        emma: emmaPoints
-      });
-    }
-  }, [data, isLoading]);
 
   // Update points mutation
   const updatePointsMutation = useMutation({
@@ -47,10 +32,6 @@ export default function Home() {
       return {};
     },
     onSuccess: () => {
-      // Clear localStorage
-      localStorage.removeItem('adrian_points');
-      localStorage.removeItem('emma_points');
-      
       // Invalidate query to refresh UI
       queryClient.invalidateQueries({ queryKey: ['/api/points'] });
       
@@ -80,9 +61,6 @@ export default function Home() {
       // Add point
       pointsData[child] = [...pointArray, pointIndex];
     }
-    
-    // Update localStorage as a backup
-    localStorage.setItem(`${child}_points`, JSON.stringify(pointsData[child]));
     
     // Update server
     updatePointsMutation.mutate(pointsData);
