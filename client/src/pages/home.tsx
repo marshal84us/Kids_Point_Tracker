@@ -121,9 +121,9 @@ export default function Home() {
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Kids Points Tracker</h1>
               {user && user.role === 'admin' ? (
-                <p className="text-gray-600 mt-2">Welcome, Parent! You can add or remove points.</p>
+                <p className="text-gray-600 mt-2"></p>
               ) : (
-                <p className="text-gray-600 mt-2">Welcome! You're in view-only mode.</p>
+                <p className="text-gray-600 mt-2"></p>
               )}
             </div>
             <div className="flex items-center gap-3 mt-4 sm:mt-0">
