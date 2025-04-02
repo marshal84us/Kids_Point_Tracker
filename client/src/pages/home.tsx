@@ -116,8 +116,8 @@ export default function Home() {
     <div className="bg-slate-50 min-h-screen font-sans">
       <div className="container mx-auto px-4 py-6 max-w-6xl">
         {/* Header and User Info */}
-        <header className="mb-6">
-          <div className="flex justify-between items-center mb-4">
+        <header className="mb-6 max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Kids Points Tracker</h1>
               {user && user.role === 'admin' ? (
@@ -126,7 +126,7 @@ export default function Home() {
                 <p className="text-gray-600 mt-2">Welcome! You're in view-only mode.</p>
               )}
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mt-4 sm:mt-0">
               <div className="text-sm text-gray-600">
                 Logged in as: <span className="font-semibold">{user?.username}</span>
               </div>
@@ -135,7 +135,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <p className="text-center text-gray-600 mb-4">
+          <p className="text-center text-gray-600 mb-6">
             {user && user.role === 'admin' 
               ? "Tap the circles to award points!" 
               : "You can see the points but can't change them."}
@@ -143,11 +143,11 @@ export default function Home() {
         </header>
 
         {/* Main content */}
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex-1">
+        <div className="flex flex-col md:flex-row justify-center max-w-screen-xl mx-auto gap-6 md:gap-10">
+          <div className="flex-1 md:max-w-md">
             {/* Reset Button for Adrian - Only visible to parents (admin role) */}
             {user && user.role === 'admin' && (
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-4">
                 <ResetButton 
                   onClick={() => handleResetClick('adrian')} 
                   childName="Adrian" 
@@ -167,10 +167,10 @@ export default function Home() {
             />
           </div>
           
-          <div className="flex-1">
+          <div className="flex-1 md:max-w-md">
             {/* Reset Button for Emma - Only visible to parents (admin role) */}
             {user && user.role === 'admin' && (
-              <div className="flex justify-center">
+              <div className="flex justify-center mb-4">
                 <ResetButton 
                   onClick={() => handleResetClick('emma')} 
                   childName="Emma" 

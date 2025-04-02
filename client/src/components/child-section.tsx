@@ -25,7 +25,7 @@ export function ChildSection({
   const pointsArray = Array.from({ length: 20 }, (_, i) => i + 1);
   
   return (
-    <div className="w-full md:w-1/2 bg-white rounded-2xl shadow-md overflow-hidden relative">
+    <div className="w-full bg-white rounded-2xl shadow-md overflow-hidden relative">
       <div className={`${colorClass} text-white py-4 px-6 flex justify-between items-center`}>
         <h2 className="text-2xl md:text-3xl font-bold">{name}</h2>
         <AnimatePresence mode="wait">
@@ -44,9 +44,9 @@ export function ChildSection({
         </AnimatePresence>
       </div>
       
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         {/* Points Grid */}
-        <div className="grid grid-cols-5 gap-4 md:gap-6">
+        <div className="grid grid-cols-5 gap-3 md:gap-5 lg:gap-6">
           {isLoading ? (
             // Loading skeletons
             [...Array(20)].map((_, index) => (
