@@ -83,9 +83,9 @@ export function ChildSection({
       
       <div className="p-4 md:p-6">
         {/* Money Goals and Savings Section */}
-        <div className="mb-6 space-y-3">
+        <div className="mb-6 space-y-4">
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${textColorClass} w-32`}>Money Goal:</div>
+            <div className={`font-semibold ${textColorClass} w-32 text-base`}>Money Goal:</div>
             <div className="relative flex-1 max-w-[160px]">
               <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
               <Input
@@ -95,13 +95,13 @@ export function ChildSection({
                 value={goalValue}
                 onChange={(e) => handleMoneyChange('goal', e.target.value)}
                 disabled={!isAdmin}
-                className={`pl-8 ${textColorClass} border-[1.5px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
+                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
               />
             </div>
           </div>
           
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${textColorClass} w-32`}>Current Savings:</div>
+            <div className={`font-semibold ${textColorClass} w-32 text-base`}>Current Savings:</div>
             <div className="relative flex-1 max-w-[160px]">
               <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
               <Input
@@ -111,7 +111,7 @@ export function ChildSection({
                 value={savingsValue}
                 onChange={(e) => handleMoneyChange('savings', e.target.value)}
                 disabled={!isAdmin}
-                className={`pl-8 ${textColorClass} border-[1.5px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
+                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
               />
             </div>
           </div>

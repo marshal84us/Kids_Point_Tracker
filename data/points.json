@@ -1,4 +1,14 @@
 {
-  "adrian": [],
-  "emma": []
+  "adrian": [
+    1
+  ],
+  "emma": [],
+  "goals": {
+    "adrian": 450,
+    "emma": 0
+  },
+  "savings": {
+    "adrian": 250,
+    "emma": 0
+  }
 }
