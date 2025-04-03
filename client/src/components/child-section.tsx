@@ -124,7 +124,7 @@ export function ChildSection({
             <div className={`font-semibold ${textColorClass} w-32 text-base`}>Still Need:</div>
             <div className="relative flex-1 max-w-[160px]">
               <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 text-green-600`} />
-              <div className="pl-8 pr-4 py-2 font-bold text-lg bg-white text-green-600 border-[2px] border-gray-200 rounded-md">
+              <div className="pl-8 pr-2 py-2 font-bold text-lg bg-white text-green-600 border-[2px] border-gray-200 rounded-md h-10 flex items-center">
                 {goalDeficit}
               </div>
             </div>
