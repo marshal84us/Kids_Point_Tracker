@@ -61,6 +61,9 @@ export function ChildSection({
     }
   };
   
+  // Calculate goal deficit (how much more needed to reach goal)
+  const goalDeficit = Math.max(goalValue - savingsValue, 0);
+  
   return (
     <div className="w-full bg-white rounded-2xl shadow-md overflow-hidden relative">
       <div className={`${colorClass} text-white py-4 px-6 flex justify-between items-center`}>
@@ -85,9 +88,9 @@ export function ChildSection({
         {/* Money Goals and Savings Section */}
         <div className="mb-6 space-y-4">
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} w-32 text-base`}>My Goal:</div>
+            <div className={`font-semibold ${textColorClass} w-32 text-base`}>My Goal:</div>
             <div className="relative flex-1 max-w-[160px]">
-              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'}`} />
+              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
               <Input
                 type="number"
                 min="0"
@@ -95,15 +98,15 @@ export function ChildSection({
                 value={goalValue}
                 onChange={(e) => handleMoneyChange('goal', e.target.value)}
                 disabled={!isAdmin}
-                className={`pl-8 font-bold text-lg bg-white ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
+                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
               />
             </div>
           </div>
           
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} w-32 text-base`}>My Savings:</div>
+            <div className={`font-semibold ${textColorClass} w-32 text-base`}>My Savings:</div>
             <div className="relative flex-1 max-w-[160px]">
-              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'}`} />
+              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
               <Input
                 type="number"
                 min="0"
@@ -111,8 +114,19 @@ export function ChildSection({
                 value={savingsValue}
                 onChange={(e) => handleMoneyChange('savings', e.target.value)}
                 disabled={!isAdmin}
-                className={`pl-8 font-bold text-lg bg-white ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
+                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
               />
+            </div>
+          </div>
+          
+          {/* Goal Deficit (How much more needed) */}
+          <div className="flex items-center space-x-3">
+            <div className={`font-semibold ${textColorClass} w-32 text-base`}>Still Need:</div>
+            <div className="relative flex-1 max-w-[160px]">
+              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 text-green-600`} />
+              <div className="pl-8 pr-4 py-2 font-bold text-lg bg-white text-green-600 border-[2px] border-gray-200 rounded-md">
+                {goalDeficit}
+              </div>
             </div>
           </div>
         </div>
