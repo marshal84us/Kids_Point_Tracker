@@ -85,9 +85,9 @@ export function ChildSection({
         {/* Money Goals and Savings Section */}
         <div className="mb-6 space-y-4">
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${textColorClass} w-32 text-base`}>Money Goal:</div>
+            <div className={`font-semibold ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} w-32 text-base`}>My Goal:</div>
             <div className="relative flex-1 max-w-[160px]">
-              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
+              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'}`} />
               <Input
                 type="number"
                 min="0"
@@ -95,15 +95,15 @@ export function ChildSection({
                 value={goalValue}
                 onChange={(e) => handleMoneyChange('goal', e.target.value)}
                 disabled={!isAdmin}
-                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
+                className={`pl-8 font-bold text-lg bg-white ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
               />
             </div>
           </div>
           
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${textColorClass} w-32 text-base`}>Current Savings:</div>
+            <div className={`font-semibold ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} w-32 text-base`}>Current Savings:</div>
             <div className="relative flex-1 max-w-[160px]">
-              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
+              <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'}`} />
               <Input
                 type="number"
                 min="0"
@@ -111,7 +111,7 @@ export function ChildSection({
                 value={savingsValue}
                 onChange={(e) => handleMoneyChange('savings', e.target.value)}
                 disabled={!isAdmin}
-                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
+                className={`pl-8 font-bold text-lg bg-white ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
               />
             </div>
           </div>

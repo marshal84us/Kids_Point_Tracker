@@ -24,8 +24,8 @@ export function ResetModal({ isOpen, onClose, onConfirm, childName }: ResetModal
           <AlertDialogTitle>Reset Points?</AlertDialogTitle>
           <AlertDialogDescription>
             {childName 
-              ? `Are you sure you want to reset all points for ${childName}?` 
-              : `Are you sure you want to reset all points for both children?`}
+              ? `Are you sure you want to reset all points for ${childName}? Money goals and savings will not be affected.` 
+              : `Are you sure you want to reset all points for both children? Money goals and savings will not be affected.`}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

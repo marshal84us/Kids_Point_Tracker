@@ -79,6 +79,13 @@ export default function Home() {
       
       // Close modal
       setIsResetModalOpen(false);
+      
+      // Show success toast
+      toast({
+        title: `Points Reset`,
+        description: `Successfully reset points for ${childToReset === 'adrian' ? 'Adrian' : 'Emma'}. Money values were preserved.`,
+        variant: "default"
+      });
     }
   });
   
