@@ -49,7 +49,15 @@ export type Credentials = z.infer<typeof credentialsSchema>;
 // Points schema for tracking kids' points
 export const pointsSchema = z.object({
   adrian: z.array(z.number()),
-  emma: z.array(z.number())
+  emma: z.array(z.number()),
+  goals: z.object({
+    adrian: z.number().default(0),
+    emma: z.number().default(0)
+  }).default({ adrian: 0, emma: 0 }),
+  savings: z.object({
+    adrian: z.number().default(0),
+    emma: z.number().default(0)
+  }).default({ adrian: 0, emma: 0 })
 });
 
 export type Points = z.infer<typeof pointsSchema>;

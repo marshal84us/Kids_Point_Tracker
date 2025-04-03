@@ -97,7 +97,12 @@ export class JsonFileStorage implements IStorage {
     } catch (error) {
       // If the file doesn't exist or is invalid, return default empty points
       console.error('Error reading points file:', error);
-      const defaultPoints = { adrian: [], emma: [] };
+      const defaultPoints = { 
+        adrian: [], 
+        emma: [], 
+        goals: { adrian: 0, emma: 0 },
+        savings: { adrian: 0, emma: 0 }
+      };
       
       // Try to create the default file
       try {
@@ -122,13 +127,17 @@ export class JsonFileStorage implements IStorage {
   }
 
   async resetPoints(): Promise<Points> {
+    // Get current points to preserve goals and savings
+    const currentPoints = await this.getPoints();
     const emptyPoints = {
       adrian: [],
-      emma: []
+      emma: [],
+      goals: currentPoints.goals,
+      savings: currentPoints.savings
     };
     
     try {
-      // Reset points in JSON file
+      // Reset points in JSON file but preserve goals and savings
       await fs.writeFile(pointsFilePath, JSON.stringify(emptyPoints, null, 2));
       return emptyPoints;
     } catch (error) {

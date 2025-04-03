@@ -1,9 +1,10 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { pointsSchema, loginSchema, UserRole, ChildType } from "@shared/schema";
+import { pointsSchema, loginSchema, UserRole, ChildType, Points } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import session from 'express-session';
+import { z } from "zod";
 
 // Define types for session
 declare module 'express-session' {
@@ -118,14 +119,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json(points);
       }
       
-      // If child user with specific childView, return only their points
+      // If child user with specific childView, return only their points and their goals/savings
       if (req.session.user && req.session.user.childView) {
         const childView = req.session.user.childView;
-        // Create a response with only the child's points visible
+        const otherChild = childView === 'adrian' ? 'emma' : 'adrian';
+        // Create a response with only the child's points, goals and savings visible
         const filteredPoints = {
           [childView]: points[childView],
           // Set the other child's points to empty array
-          [childView === 'adrian' ? 'emma' : 'adrian']: []
+          [otherChild]: [],
+          // Include goals and savings but only for the current child
+          goals: { 
+            [childView]: points.goals[childView], 
+            [otherChild]: 0 
+          },
+          savings: { 
+            [childView]: points.savings[childView], 
+            [otherChild]: 0 
+          }
         };
         return res.json(filteredPoints);
       }
@@ -165,6 +176,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error resetting points:", error);
       res.status(500).json({ message: "Failed to reset points" });
+    }
+  });
+
+  // POST /api/money - Update money goals and savings (requires admin role)
+  app.post("/api/money", authenticateMiddleware, adminMiddleware, async (req: Request, res: Response) => {
+    try {
+      // Get current points
+      const currentPoints = await storage.getPoints();
+
+      // Validate request body - looking for goals and savings objects
+      const moneySchema = z.object({
+        goals: z.object({
+          adrian: z.number(),
+          emma: z.number()
+        }),
+        savings: z.object({
+          adrian: z.number(),
+          emma: z.number()
+        })
+      });
+      
+      const result = moneySchema.safeParse(req.body);
+      if (!result.success) {
+        const validationError = fromZodError(result.error);
+        return res.status(400).json({ message: validationError.message });
+      }
+
+      // Update only goals and savings while preserving points
+      const updatedPoints: Points = {
+        adrian: currentPoints.adrian,
+        emma: currentPoints.emma,
+        goals: result.data.goals,
+        savings: result.data.savings
+      };
+
+      // Update points
+      const points = await storage.updatePoints(updatedPoints);
+      res.json(points);
+    } catch (error) {
+      console.error("Error updating money values:", error);
+      res.status(500).json({ message: "Failed to update money values" });
     }
   });
 

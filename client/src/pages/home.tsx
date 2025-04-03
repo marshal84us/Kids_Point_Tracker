@@ -7,11 +7,13 @@ import { ResetModal } from "@/components/reset-modal";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
   const { user, logout, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
   
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -20,15 +22,29 @@ export default function Home() {
     }
   }, [user, authLoading, setLocation]);
 
+  // Define the Points type
+  type Points = {
+    adrian: number[], 
+    emma: number[],
+    goals: {
+      adrian: number,
+      emma: number
+    },
+    savings: {
+      adrian: number,
+      emma: number
+    }
+  };
+
   // Fetch points data from the server
-  const { data, isLoading } = useQuery<{ adrian: number[], emma: number[] }>({
+  const { data, isLoading } = useQuery<Points>({
     queryKey: ['/api/points'],
     staleTime: 0 // Always get the latest points
   });
 
   // Update points mutation
   const updatePointsMutation = useMutation({
-    mutationFn: async (pointsData: { adrian: number[], emma: number[] }) => {
+    mutationFn: async (pointsData: Points) => {
       await apiRequest('POST', '/api/points', pointsData);
       return pointsData;
     },
@@ -45,7 +61,9 @@ export default function Home() {
       // Create a copy of the current points
       const pointsData = {
         adrian: [...(data.adrian || [])],
-        emma: [...(data.emma || [])]
+        emma: [...(data.emma || [])],
+        goals: data.goals || { adrian: 0, emma: 0 },
+        savings: data.savings || { adrian: 0, emma: 0 }
       };
       
       // Reset only the specified child's points
@@ -63,6 +81,39 @@ export default function Home() {
       setIsResetModalOpen(false);
     }
   });
+  
+  // Update money values mutation
+  const updateMoneyMutation = useMutation({
+    mutationFn: async ({ type, child, value }: { type: 'goal' | 'savings', child: 'adrian' | 'emma', value: number }) => {
+      if (!data) return {};
+      
+      const updatedMoney = {
+        goals: { ...data.goals },
+        savings: { ...data.savings }
+      };
+      
+      // Update the specified money value
+      if (type === 'goal') {
+        updatedMoney.goals[child] = value;
+      } else {
+        updatedMoney.savings[child] = value;
+      }
+      
+      // Send to server
+      await apiRequest('POST', '/api/money', updatedMoney);
+      return updatedMoney;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/points'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Failed to update money values",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  });
 
   // Toggle point handler
   const handleTogglePoint = (child: 'adrian' | 'emma', pointIndex: number) => {
@@ -72,7 +123,9 @@ export default function Home() {
     // Create a copy of the current points
     const pointsData = {
       adrian: [...(data.adrian || [])],
-      emma: [...(data.emma || [])]
+      emma: [...(data.emma || [])],
+      goals: { ...data.goals },
+      savings: { ...data.savings }
     };
     
     // Toggle the point
@@ -89,6 +142,11 @@ export default function Home() {
     
     // Update server
     updatePointsMutation.mutate(pointsData);
+  };
+  
+  // Handle money value updates
+  const handleMoneyUpdate = (child: 'adrian' | 'emma', type: 'goal' | 'savings', value: number) => {
+    updateMoneyMutation.mutate({ type, child, value });
   };
   
   // Handle logout
@@ -168,8 +226,12 @@ export default function Home() {
                 colorClass="bg-blue-600" 
                 textColorClass="text-blue-600" 
                 points={data?.adrian || []} 
+                goal={data?.goals?.adrian || 0}
+                savings={data?.savings?.adrian || 0}
                 onTogglePoint={(pointIndex) => handleTogglePoint('adrian', pointIndex)} 
+                onUpdateMoney={(type, value) => handleMoneyUpdate('adrian', type, value)}
                 isLoading={isLoading}
+                isAdmin={user?.role === 'admin'}
               />
             </div>
           )}
@@ -194,8 +256,12 @@ export default function Home() {
                 colorClass="bg-pink-500" 
                 textColorClass="text-pink-500" 
                 points={data?.emma || []} 
+                goal={data?.goals?.emma || 0}
+                savings={data?.savings?.emma || 0}
                 onTogglePoint={(pointIndex) => handleTogglePoint('emma', pointIndex)} 
+                onUpdateMoney={(type, value) => handleMoneyUpdate('emma', type, value)}
                 isLoading={isLoading}
+                isAdmin={user?.role === 'admin'}
               />
             </div>
           )}
