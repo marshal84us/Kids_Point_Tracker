@@ -68,16 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = await response.json();
       setUser(userData);
       
-      // Customize welcome message based on role and childView
-      let welcomeMessage = `Welcome, ${userData.username}!`;
-      if (userData.role === 'viewer' && userData.childView) {
-        welcomeMessage = `Welcome, ${userData.childView === 'adrian' ? 'Adrian' : 'Emma'}!`;
-      }
-      
-      toast({
-        title: "Login successful!",
-        description: welcomeMessage,
-      });
+      // No success toast notification - just silently log in
     } catch (error: any) {
       toast({
         title: "Login failed",
@@ -105,10 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       setUser(null);
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
-      });
+      // No success toast notification for logout
       setLocation("/login");
     } catch (error: any) {
       toast({
