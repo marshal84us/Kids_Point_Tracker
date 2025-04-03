@@ -101,7 +101,7 @@ export function ChildSection({
           </div>
           
           <div className="flex items-center space-x-3">
-            <div className={`font-semibold ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} w-32 text-base`}>Current Savings:</div>
+            <div className={`font-semibold ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'} w-32 text-base`}>My Savings:</div>
             <div className="relative flex-1 max-w-[160px]">
               <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${color === 'blue' ? 'text-blue-800' : 'text-pink-700'}`} />
               <Input
