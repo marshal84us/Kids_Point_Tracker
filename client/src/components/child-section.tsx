@@ -91,15 +91,20 @@ export function ChildSection({
             <div className={`font-semibold ${textColorClass} w-32 text-base`}>My Goal:</div>
             <div className="relative flex-1 max-w-[160px]">
               <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
-              <Input
-                type="number"
-                min="0"
-                step="1"
-                value={goalValue}
-                onChange={(e) => handleMoneyChange('goal', e.target.value)}
-                disabled={!isAdmin}
-                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
-              />
+              {isAdmin ? (
+                <Input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={goalValue}
+                  onChange={(e) => handleMoneyChange('goal', e.target.value)}
+                  className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] border-${colorClass.replace('bg-', '')}`}
+                />
+              ) : (
+                <div className={`pl-8 pr-2 py-2 font-bold text-lg bg-white ${textColorClass} border-[2px] border-gray-200 rounded-md h-10 flex items-center`}>
+                  {goalValue}
+                </div>
+              )}
             </div>
           </div>
           
@@ -107,15 +112,20 @@ export function ChildSection({
             <div className={`font-semibold ${textColorClass} w-32 text-base`}>My Savings:</div>
             <div className="relative flex-1 max-w-[160px]">
               <DollarSign className={`absolute left-2 top-2.5 h-4 w-4 ${textColorClass}`} />
-              <Input
-                type="number"
-                min="0"
-                step="1"
-                value={savingsValue}
-                onChange={(e) => handleMoneyChange('savings', e.target.value)}
-                disabled={!isAdmin}
-                className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] ${isAdmin ? `border-${colorClass.replace('bg-', '')}` : 'border-gray-200'}`}
-              />
+              {isAdmin ? (
+                <Input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={savingsValue}
+                  onChange={(e) => handleMoneyChange('savings', e.target.value)}
+                  className={`pl-8 font-bold text-lg bg-white ${textColorClass} border-[2px] border-${colorClass.replace('bg-', '')}`}
+                />
+              ) : (
+                <div className={`pl-8 pr-2 py-2 font-bold text-lg bg-white ${textColorClass} border-[2px] border-gray-200 rounded-md h-10 flex items-center`}>
+                  {savingsValue}
+                </div>
+              )}
             </div>
           </div>
           
