@@ -1,6 +1,7 @@
 {
   "adrian": [
-    1
+    1,
+    2
   ],
   "emma": [],
   "goals": {
@@ -8,7 +9,7 @@
     "emma": 0
   },
   "savings": {
-    "adrian": 241,
+    "adrian": 245,
     "emma": 0
   }
 }
