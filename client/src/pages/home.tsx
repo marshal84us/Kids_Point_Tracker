@@ -192,9 +192,6 @@ export default function Home() {
               )}
             </div>
             <div className="flex items-center gap-3 mt-4 sm:mt-0">
-              <div className="text-sm text-gray-600">
-                Logged in as: <span className="font-semibold">{user?.username}</span>
-              </div>
               <Button onClick={handleLogout} variant="outline" size="sm">
                 Log out
               </Button>
