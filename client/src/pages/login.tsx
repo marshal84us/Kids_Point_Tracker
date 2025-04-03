@@ -101,11 +101,7 @@ export default function Login() {
               </Button>
             </form>
           </CardContent>
-          <CardFooter className="flex justify-center text-sm">
-            <div className="text-center text-gray-500 mt-2">
-              <p>© {new Date().getFullYear()} Kids Points Tracker</p>
-            </div>
-          </CardFooter>
+
         </Card>
       </div>
     </div>
