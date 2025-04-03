@@ -1,7 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { pointsSchema, loginSchema, UserRole } from "@shared/schema";
+import { pointsSchema, loginSchema, UserRole, ChildType } from "@shared/schema";
 import { fromZodError } from "zod-validation-error";
 import session from 'express-session';
 
@@ -12,6 +12,7 @@ declare module 'express-session' {
       username: string;
       role: UserRole;
       authenticated: boolean;
+      childView?: ChildType | null; // Which child's view (if applicable)
     };
   }
 }
@@ -63,13 +64,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.session.user = {
           username,
           role: authResult.role,
-          authenticated: true
+          authenticated: true,
+          childView: authResult.childView
         };
         
         res.json({ 
           authenticated: true, 
           role: authResult.role,
-          username
+          username,
+          childView: authResult.childView
         });
       } else {
         res.status(401).json({ message: "Invalid username or password" });
@@ -97,17 +100,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ 
         authenticated: true,
         role: req.session.user.role,
-        username: req.session.user.username
+        username: req.session.user.username,
+        childView: req.session.user.childView
       });
     } else {
       res.json({ authenticated: false });
     }
   });
   
-  // GET /api/points - Get current points for both children (requires auth)
-  app.get("/api/points", authenticateMiddleware, async (_req: Request, res: Response) => {
+  // GET /api/points - Get points based on user role and childView (requires auth)
+  app.get("/api/points", authenticateMiddleware, async (req: Request, res: Response) => {
     try {
       const points = await storage.getPoints();
+      
+      // If admin, return all points
+      if (req.session.user && req.session.user.role === 'admin') {
+        return res.json(points);
+      }
+      
+      // If child user with specific childView, return only their points
+      if (req.session.user && req.session.user.childView) {
+        const childView = req.session.user.childView;
+        // Create a response with only the child's points visible
+        const filteredPoints = {
+          [childView]: points[childView],
+          // Set the other child's points to empty array
+          [childView === 'adrian' ? 'emma' : 'adrian']: []
+        };
+        return res.json(filteredPoints);
+      }
+      
+      // Fallback to returning all points (shouldn't happen with proper setup)
       res.json(points);
     } catch (error) {
       console.error("Error getting points:", error);

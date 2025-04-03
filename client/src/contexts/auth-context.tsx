@@ -4,11 +4,13 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 
 type UserRole = "admin" | "viewer" | null;
+type ChildType = "adrian" | "emma" | null;
 
 interface User {
   authenticated: boolean;
   username?: string;
   role?: UserRole;
+  childView?: ChildType;
 }
 
 interface AuthContextType {
@@ -65,9 +67,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       const userData = await response.json();
       setUser(userData);
+      
+      // Customize welcome message based on role and childView
+      let welcomeMessage = `Welcome, ${userData.username}!`;
+      if (userData.role === 'viewer' && userData.childView) {
+        welcomeMessage = `Welcome, ${userData.childView === 'adrian' ? 'Adrian' : 'Emma'}!`;
+      }
+      
       toast({
         title: "Login successful!",
-        description: `Welcome, ${userData.username}!`,
+        description: welcomeMessage,
       });
     } catch (error: any) {
       toast({

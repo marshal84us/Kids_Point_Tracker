@@ -103,8 +103,10 @@ export default function Login() {
           </CardContent>
           <CardFooter className="flex justify-center text-sm">
             <div className="text-center text-gray-500 mt-2">
-              <p></p>
-              <p></p>
+              <p className="mb-1"><strong>Login accounts:</strong></p>
+              <p className="mb-1">Parent: username <strong>parent</strong> / password <strong>1234</strong></p>
+              <p className="mb-1">Adrian: username <strong>adrian</strong> / password <strong>2018</strong></p>
+              <p className="mb-1">Emma: username <strong>emma</strong> / password <strong>2020</strong></p>
             </div>
           </CardFooter>
         </Card>

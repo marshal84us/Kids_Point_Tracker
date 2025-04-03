@@ -1,4 +1,4 @@
-import { users, type User, type InsertUser, type Points, type AppUser, type Credentials, type UserRole } from "@shared/schema";
+import { users, type User, type InsertUser, type Points, type AppUser, type Credentials, type UserRole, type ChildType } from "@shared/schema";
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -16,7 +16,7 @@ export interface IStorage {
   resetPoints(): Promise<Points>;
   
   // Authentication methods
-  authenticateUser(username: string, password: string): Promise<{ authenticated: boolean, role: UserRole | null }>;
+  authenticateUser(username: string, password: string): Promise<{ authenticated: boolean, role: UserRole | null, childView?: ChildType | null }>;
   getCredentials(): Promise<Credentials>;
 }
 
@@ -62,13 +62,23 @@ export class JsonFileStorage implements IStorage {
     }
   }
 
-  async authenticateUser(username: string, password: string): Promise<{ authenticated: boolean, role: UserRole | null }> {
+  async authenticateUser(username: string, password: string): Promise<{ authenticated: boolean, role: UserRole | null, childView?: ChildType | null }> {
     try {
       const credentials = await this.getCredentials();
       const user = credentials.users.find(u => u.username === username && u.password === password);
       
       if (user) {
-        return { authenticated: true, role: user.role };
+        // For child-specific users, set the childView based on username
+        if (user.role === 'viewer') {
+          if (username === 'adrian') {
+            return { authenticated: true, role: user.role, childView: 'adrian' };
+          } else if (username === 'emma') {
+            return { authenticated: true, role: user.role, childView: 'emma' };
+          }
+        }
+        
+        // For admin users or other viewers, no specific childView
+        return { authenticated: true, role: user.role, childView: null };
       }
       
       return { authenticated: false, role: null };

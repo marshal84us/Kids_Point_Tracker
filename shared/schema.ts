@@ -27,10 +27,15 @@ export const userRoleSchema = z.enum(['admin', 'viewer']);
 
 export type UserRole = z.infer<typeof userRoleSchema>;
 
+export const childTypeSchema = z.enum(['adrian', 'emma']);
+
+export type ChildType = z.infer<typeof childTypeSchema>;
+
 export const appUserSchema = z.object({
   username: z.string(),
   password: z.string(),
-  role: userRoleSchema
+  role: userRoleSchema,
+  childView: childTypeSchema.nullable().optional() // Which child's points this user can see (null for admin who sees all)
 });
 
 export type AppUser = z.infer<typeof appUserSchema>;

@@ -138,57 +138,69 @@ export default function Home() {
           <p className="text-center text-gray-600 mb-6">
             {user && user.role === 'admin' 
               ? "Tap the circles to award points!" 
-              : "You can see the points but can't change them."}
+              : user?.childView === 'adrian'
+                ? "Welcome Adrian! Here are your points."
+                : user?.childView === 'emma'
+                  ? "Welcome Emma! Here are your points."
+                  : "You can see the points but can't change them."}
           </p>
         </header>
 
         {/* Main content */}
         <div className="flex flex-col md:flex-row justify-center max-w-screen-xl mx-auto gap-6 md:gap-10">
-          <div className="flex-1 md:max-w-md">
-            {/* Reset Button for Adrian - Only visible to parents (admin role) */}
-            {user && user.role === 'admin' && (
-              <div className="flex justify-center mb-4">
-                <ResetButton 
-                  onClick={() => handleResetClick('adrian')} 
-                  childName="Adrian" 
-                  color="blue"
-                />
-              </div>
-            )}
-          
-            <ChildSection 
-              name="Adrian" 
-              color="blue" 
-              colorClass="bg-blue-600" 
-              textColorClass="text-blue-600" 
-              points={data?.adrian || []} 
-              onTogglePoint={(pointIndex) => handleTogglePoint('adrian', pointIndex)} 
-              isLoading={isLoading}
-            />
-          </div>
-          
-          <div className="flex-1 md:max-w-md">
-            {/* Reset Button for Emma - Only visible to parents (admin role) */}
-            {user && user.role === 'admin' && (
-              <div className="flex justify-center mb-4">
-                <ResetButton 
-                  onClick={() => handleResetClick('emma')} 
-                  childName="Emma" 
-                  color="pink"
-                />
-              </div>
-            )}
+          {/* Show Adrian's section if user is admin or if user is specifically 'adrian' */}
+          {(user?.role === 'admin' || user?.childView === 'adrian') && (
+            <div className="flex-1 md:max-w-md">
+              {/* Reset Button for Adrian - Only visible to parents (admin role) */}
+              {user && user.role === 'admin' && (
+                <div className="flex justify-center mb-4">
+                  <ResetButton 
+                    onClick={() => handleResetClick('adrian')} 
+                    childName="Adrian" 
+                    color="blue"
+                  />
+                </div>
+              )}
             
-            <ChildSection 
-              name="Emma" 
-              color="pink" 
-              colorClass="bg-pink-500" 
-              textColorClass="text-pink-500" 
-              points={data?.emma || []} 
-              onTogglePoint={(pointIndex) => handleTogglePoint('emma', pointIndex)} 
-              isLoading={isLoading}
-            />
-          </div>
+              <ChildSection 
+                name="Adrian" 
+                color="blue" 
+                colorClass="bg-blue-600" 
+                textColorClass="text-blue-600" 
+                points={data?.adrian || []} 
+                onTogglePoint={(pointIndex) => handleTogglePoint('adrian', pointIndex)} 
+                isLoading={isLoading}
+              />
+            </div>
+          )}
+          
+          {/* Show Emma's section if user is admin or if user is specifically 'emma' */}
+          {(user?.role === 'admin' || user?.childView === 'emma') && (
+            <div className="flex-1 md:max-w-md">
+              {/* Reset Button for Emma - Only visible to parents (admin role) */}
+              {user && user.role === 'admin' && (
+                <div className="flex justify-center mb-4">
+                  <ResetButton 
+                    onClick={() => handleResetClick('emma')} 
+                    childName="Emma" 
+                    color="pink"
+                  />
+                </div>
+              )}
+              
+              <ChildSection 
+                name="Emma" 
+                color="pink" 
+                colorClass="bg-pink-500" 
+                textColorClass="text-pink-500" 
+                points={data?.emma || []} 
+                onTogglePoint={(pointIndex) => handleTogglePoint('emma', pointIndex)} 
+                isLoading={isLoading}
+              />
+            </div>
+          )}
+          
+
         </div>
 
         {/* Reset Confirmation Modal */}
